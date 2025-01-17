@@ -1,0 +1,53 @@
+name: Python Data Science Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  data-science-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Step 3: Install dependencies
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Step 4: Run Linting (e.g., using flake8)
+      - name: Run Linter
+        run: flake8 src/ tests/
+
+      # Step 5: Run Unit Tests
+      - name: Run Tests
+        run: pytest tests/
+
+      # Step 6: Data Validation or Processing
+      - name: Validate Data
+        run: python src/validate_data.py
+
+      # Step 7: Train Model (if applicable)
+      - name: Train Model
+        run: python src/train_model.py
+
+      # Step 8: Upload Artifacts (e.g., trained model)
+      - name: Upload Model Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trained-model
+          path: models/
